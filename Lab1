@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <iostream>
+#define G 10
+int main(void)
+{
+	float H;
+	float t;
+	float v;
+
+	printf_s("H= ");
+	scanf_s("%f", &H);
+
+	printf_s("t= ");
+	scanf_s("%f", &t);
+
+	v = (H / t) - (G*t / 2);
+
+	printf_s("starting speed= %.2f\n", v);
+
+	system("pause");
+
+	return 0;
+}
