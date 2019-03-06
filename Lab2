@@ -27,7 +27,7 @@ int main(void)
 		s = s + a;
 		c = c + 1;
 		b = b * x;
-		a = a / c;
+		a = c / b;
 		i = i + 1;
 	}
 
