@@ -1,0 +1,85 @@
+#include "pch.h"
+#include <iostream>
+#include <stdio.h>
+// определение символических констант
+#define YES 1
+#define NO 0
+#define MAXNABOR 500
+#define MAXLINE 1000
+void process_line(char buffer[]); //прототип функции
+char nabor[MAXNABOR]; //разрешеный набор, описывается до функции main(), чтобы был виден и в функции process_line
+char result_line[MAXLINE]; //результирующая строка, описывается до функции main(), чтобы была видна и в функции process_line
+
+int main(void)
+{
+	char line[MAXLINE];
+	system("cls");
+	result_line[0] = '\0';
+	printf_s("Vvedite razreshennyi nabor:\n");
+	fgets(nabor, MAXNABOR, stdin);
+	printf_s("Vvedite stroku:\n");
+	fgets(line, MAXLINE, stdin);
+	process_line(line);
+	printf_s("Razreshennye slova:\n");
+	puts(result_line);
+	return 0;
+}
+void process_line(char buffer[])
+{
+	char c; // текущий символ
+	int flag; // признак слова
+	int found; // индикатор того, что искомый символ обнаружен в разрешенном наборе
+	int result_found; // индикатор того, что все символы в слове обнаружены в разрешенном наборе
+	int i; // позиция текущего символа исходной cтроки
+	int k; // позиция символа в разрешенном наборе, используется для цикла движения и сравнения по разр. набору
+	int pos; // позиция текущего символа результирующей строки
+	int start; // позиция начала слова
+	int j; // позиция символа в слове, используется в цикле копирования слова в результирующую строку;
+	// начальные присваивания (инициализация)
+	flag = NO;
+	found = NO;
+	result_found = YES; //изначально считаем, что все символы найдены в разр. наборе
+	start = 0;
+	i = 0;
+	pos = 0;
+	// цикл чтения символов из строки
+	do
+	{
+		c = buffer[i]; // взять текущий символ из буфера
+		if (c == ' ' || c == '.' || c == ',' ||
+			c == '\n' || c == '\0')
+		{
+			// найден разделитель
+			if (flag == YES) // это первый разделить после слова
+			{
+				if (result_found == YES) // проверить, обнаружены ли все символы слова в разрешенном наборе
+				{
+					// слово не подлежит удалению
+					// оно копируется в результирующую
+					// строку
+					for (j = start; j < i; j++)
+						result_line[pos++] = buffer[j];
+				}
+			}
+			flag = NO; //сбрасываем признак слова
+			result_found = YES; //сбрасываем признак разрешенного слова
+			result_line[pos++] = c;
+		}
+		else
+		{
+			// найдена буква
+			if (flag == NO)
+				start = i; // запомнить позицию начала слова
+			k = 0;
+			do //цикл проверки есть ли текущий символ в разрешенном наборе
+			{
+				if (c == nabor[k]) found = YES; else found = NO; //если нашли совпадение то YES иначе NO
+				k++;
+			} while (nabor[k] != '\n' && found == NO); //цикл крутится ПОКА НЕ конец строки и ПОКА ничего не совпало
+			result_found = result_found * found; //перемножаем найденный признак с результирующим (по сути логическое И)
+												//если все found в слове были 1, то и result_found всего слова будет 1
+			flag = YES; //устанавливаем признак слова, поскольку была найдена буква
+		}
+		i++;
+	} while (c != '\n');
+}
