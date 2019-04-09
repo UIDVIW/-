@@ -1,3 +1,0 @@
-# Osnovy-programmirovania
-Create repository
-
