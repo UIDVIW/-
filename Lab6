@@ -1,0 +1,58 @@
+#include <stdio.h>
+#define K 3
+#define N 5
+#define YES 1
+#define NO 0
+
+int main(void)
+{
+	int x[K][N];
+	float prevaver = 0, aver = 0;//предыдущие среднее арифметическое и среднее арифметическое
+	int i, j, t, flag;
+
+	//ввод массива
+	for (i = 0; i < K; i++)
+	{
+		for (j = 0; j < N; j++)
+			scanf_s("%d", &x[i][j]);
+	}
+	//обработка массива
+	
+	do
+	{
+		flag = NO; //начинаем сначала, предполагаем, что перестановок не будет
+		for (i = 0; i < K-1; i++)
+		{
+			aver = 0;
+			prevaver = 0;
+			for (j = 0; j < N; j++)
+			{
+				aver = aver + x[i + 1][j];
+				prevaver = prevaver + x[i][j];
+			}
+			aver = aver / N;
+			prevaver = prevaver / N;
+			if (prevaver > aver)
+			{
+				flag = YES;// есть перестановка
+				for (j = 0; j < N; j++)
+				{
+					t = x[i + 1][j];
+					x[i + 1][j] = x[i][j];
+					x[i][j] = t;
+				}
+			}
+		}
+	} while (flag == YES);// повторяем пока есть хотя бы одна перестановка
+
+	// вывод массива
+	for (i = 0; i < K; i++)
+	{
+		for (j = 0; j < N; j++)
+			printf_s("%4d", x[i][j]);
+		printf_s("\n");
+	}
+	getchar();
+	getchar();
+	return 0;
+}
