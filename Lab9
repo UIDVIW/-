@@ -1,0 +1,72 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#define MAXLINE 1024
+#define YES 1
+#define NO 0
+
+int flag;
+
+void process_line(char buffer[]);
+
+int main(void)
+{
+	//указатели на структуру типа FILE для входного и выходного файлов
+	FILE *fpin;
+	FILE *fpout;
+
+	char line1[MAXLINE];
+	char line2[MAXLINE];
+	flag = NO;
+
+	//открыть файл для чтения
+	fpin = fopen("test.txt", "rt");
+	if (fpin == NULL) return;//ошибка при открытии файла
+
+	//открыть файл для записи
+	fpout = fopen("result.txt", "wt");
+	if (fpout == NULL) return;//ошибка при открытии файла
+	
+	while (!feof(fpin))
+	{
+		fgets(line1, MAXLINE, fpin);
+		process_line(line1, line2);
+		fputs(line2, fpout);
+	}
+	
+	fclose(fpin);
+	fclose(fpout);
+	getchar();
+	getchar();
+	return 0;
+}
+void process_line(char buffer1[], char buffer2[])
+{
+	int i, j;
+	
+	//начальные присваивания (инициализация)
+	i = 0;
+	j = 0;
+		
+	//цикл чтения символов из строки
+	while (buffer1[i] != '\n')
+	{
+		if (buffer1[i] == '/' && buffer1[i + 1] == '*')
+		{
+			flag = YES;
+		}
+		if (!flag)
+		{
+			buffer2[j] = buffer1[i];
+			j++;
+		}
+		if (buffer1[i] == '/' && buffer1[i - 1] == '*')
+		{
+			flag = NO;
+		}
+	
+		i++;
+	} 
+	buffer2[j] = '\n';
+	buffer2[j+1] = '\0';
+	
+}
