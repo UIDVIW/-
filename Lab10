@@ -1,0 +1,105 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define YES 1
+#define NO 0
+
+#define MAXLEN 1000// максимальная длина строки
+#define NLINES 1000// максимальное число строк
+
+int process_line(char **lines,int j);
+
+int main(void)
+{
+	FILE *fpin;// указатель на входной файл
+	FILE *fpout;// указатель на выходной файл
+	int nlines;// число строк
+	char **lines_ptr = NULL;// указатель на динамический массив
+	int npointers;// число указателей в динамическом массиве
+	int i;
+
+	// открытие файла на чтение
+	fpin = fopen("test.txt", "rt");
+	if (fpin == NULL) return 1;// ошибка при открытии файла
+
+	// открытие файла на запись
+	fpout = fopen("result.txt", "wt");
+	if (fpout == NULL) return 1;// ошибка при открытии файла
+
+	// заказать и обнулить динамический массив указателей (два варианта)
+#if 1
+	lines_ptr = (char**)malloc(NLINES * sizeof(char*));
+	// обнулить массив указателей
+	memset(lines_ptr, 0, NLINES * sizeof(char*));
+#else
+	lines_ptr = (char**)calloc( NLINES, sizeof(char*));
+#endif
+	npointers = NLINES;
+	nlines = 0;
+
+	while (!feof(fpin))// цикл до конца файла
+	{
+		char line[MAXLEN];
+		// чтение строки
+		char *ptr = fgets(line, MAXLEN, fpin);
+		int len;
+
+		if (ptr == NULL)
+			break;// файл исчерпан
+
+		// определить длину строки
+		len = (int)strlen(line);
+		if (nlines == npointers)
+		{
+			// динамический массив исчерпан
+			npointers += NLINES;// увеличить число указателей в массиве
+
+			// перезаказать память для массива указателей
+			lines_ptr = (char**)realloc(lines_ptr, npointers * sizeof(char*));
+
+			// обнулить новую часть массива указателей
+			memset(&lines_ptr[nlines], 0, NLINES * sizeof(char*));
+		}
+		// заказать в памяти место для строки плюс один байт
+		lines_ptr[nlines] = (char*)malloc(len + 1);
+
+		// сохранить строку в динамическом массиве
+		strcpy(lines_ptr[nlines], line);
+		nlines++;
+	}
+
+	for(i=0; i <nlines; i++)// цикл до конца динамического
+	{
+		if(process_line(lines_ptr, i))
+		    fputs(lines_ptr[i], fpout);		
+	}
+
+	//отказаться от памяти для строк
+	for (i = 0; i < nlines; i++)
+	{
+		if (lines_ptr[i] != NULL)
+			free(lines_ptr[i]);
+	}
+
+	// отказаться от динамического массива укзателей
+	if (lines_ptr != NULL)
+		free(lines_ptr);
+
+	fclose(fpin);
+	fclose(fpout);
+
+	return 0;
+}
+
+int process_line(char **lines, int j)
+{
+	for (int k = 0; k < j; k++)
+	{
+		if (!strcmp(lines[j], lines[k]))
+			return 0;
+	}
+	return 1;
+}
